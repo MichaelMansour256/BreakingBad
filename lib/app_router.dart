@@ -1,4 +1,5 @@
 import 'package:breakingbad/business_logic/cubit/characters_cubit.dart';
+import 'package:breakingbad/data/models/characters.dart';
 import 'package:breakingbad/data/repository/characters_repository.dart';
 import 'package:breakingbad/presentation/screens/CharacterDetailsScreen.dart';
 import 'package:breakingbad/presentation/screens/characters_screen.dart';
@@ -26,7 +27,11 @@ class AppRouter {
         );
         break;
       case characterDetailsScreen:
-        return MaterialPageRoute(builder: (_) => CharacterDetailsScreen());
+        final character = settings.arguments as Character;
+        return MaterialPageRoute(
+            builder: (_) => CharacterDetailsScreen(
+                  character: character,
+                ));
         break;
       default:
         return MaterialPageRoute(builder: (_) => CharactersScreen());
