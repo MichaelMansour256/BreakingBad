@@ -22,4 +22,16 @@ class CharactersWebServices {
       return [];
     }
   }
+
+  Future<List<dynamic>> getCharacterQuotes(String characterName) async {
+    try {
+      Response response =
+          await dio.get('quote', queryParameters: {'author': characterName});
+
+      return response.data;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
 }

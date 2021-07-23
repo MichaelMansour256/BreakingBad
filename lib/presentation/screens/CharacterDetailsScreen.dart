@@ -1,6 +1,11 @@
+import 'dart:math';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:breakingbad/business_logic/cubit/characters_cubit.dart';
 import 'package:breakingbad/constants/colors.dart';
 import 'package:breakingbad/data/models/characters.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CharacterDetailsScreen extends StatelessWidget {
   final Character character;
@@ -8,6 +13,7 @@ class CharacterDetailsScreen extends StatelessWidget {
   const CharacterDetailsScreen({Key key, this.character}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<CharactersCubit>(context).getQuotes(character.name);
     return Scaffold(
       backgroundColor: MyColors.myGray,
       body: CustomScrollView(
@@ -48,6 +54,10 @@ class CharacterDetailsScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+                    BlocBuilder<CharactersCubit, CharactersState>(
+                        builder: (context, state) {
+                      return checkIfQuotesLoaded(state);
+                    })
                   ],
                 ),
               ),
@@ -116,6 +126,45 @@ class CharacterDetailsScreen extends StatelessWidget {
       endIndent: endIndent,
       thickness: 2,
       color: MyColors.myYellow,
+    );
+  }
+
+  Widget checkIfQuotesLoaded(CharactersState state) {
+    if (state is QuotesLoaded) {
+      return showRandomQuoteOrEmptySpace(state);
+    } else {
+      return showProgressIndecator();
+    }
+  }
+
+  Widget showRandomQuoteOrEmptySpace(state) {
+    var quotes = (state).quotes;
+    if (quotes.length != 0) {
+      int randomQuoteIndex = Random().nextInt(quotes.length - 1);
+      return Center(
+        child: DefaultTextStyle(
+          textAlign: TextAlign.center,
+          style: TextStyle(color: MyColors.myWhite, fontSize: 20, shadows: [
+            Shadow(
+                blurRadius: 7, color: MyColors.myYellow, offset: Offset(0, 0))
+          ]),
+          child: AnimatedTextKit(
+            animatedTexts: [
+              FlickerAnimatedText(quotes[randomQuoteIndex].quote)
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget showProgressIndecator() {
+    return Center(
+      child: CircularProgressIndicator(
+        color: MyColors.myYellow,
+      ),
     );
   }
 }
