@@ -4,6 +4,7 @@ import 'package:breakingbad/data/models/characters.dart';
 import 'package:breakingbad/presentation/widgets/character_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
 class CharactersScreen extends StatefulWidget {
   @override
@@ -170,7 +171,37 @@ class _CharactersScreenState extends State<CharactersScreen> {
         title: _isSearching ? _bulidSearchField() : _buildAppBarTitle(),
         actions: _bulidAppBarItems(),
       ),
-      body: buildBlocWidget(),
+      body: OfflineBuilder(
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          if (connected) {
+            return buildBlocWidget();
+          } else {
+            return buildOfflineWidget();
+          }
+        },
+        child: showLoadingIndecator(),
+      ),
+    );
+  }
+
+  Widget buildOfflineWidget() {
+    return Center(
+      child: Container(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            Text("No Internet Connection"),
+            Image.asset('assets/images/no_internet.png')
+          ],
+        ),
+      ),
     );
   }
 }
